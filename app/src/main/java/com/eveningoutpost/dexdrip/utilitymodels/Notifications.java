@@ -658,30 +658,47 @@ public class Notifications extends IntentService {
                         .setShowFiltered(DexCollectionType.hasFiltered() && Pref.getBooleanDefaultFalse("show_filtered_curve"))
                         .build();
 
-                Notification.DecoratedCustomViewStyle customViewStyle = new Notification.DecoratedCustomViewStyle();
+                if (Pref.getBooleanDefaultFalse("ongoing_notification_standard_style")) {
+                    // Use a system template instead of custom RemoteViews. Some devices reject the
+                    // custom layouts of apps targeting SDK < 31 ("inflated notification does not meet
+                    // minimum height requirement") and cancel the notification immediately.
+                    final Notification.BigPictureStyle pictureStyle = new Notification.BigPictureStyle()
+                            .bigPicture(notifiationBitmap);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        pictureStyle.showBigPictureWhenCollapsed(true);
+                    }
+                    if (numberIcon != null) {
+                        iconBitmap = numberIcon;
+                        b.setLargeIcon(iconBitmap);
+                        pictureStyle.bigLargeIcon((Bitmap) null);
+                    }
+                    b.setStyle(pictureStyle);
+                } else {
+                    Notification.DecoratedCustomViewStyle customViewStyle = new Notification.DecoratedCustomViewStyle();
 
-                iconBitmap = numberIcon != null ? numberIcon : new BgSparklineBuilder(mContext)
-                        .setHeight(64)
-                        .showLowLine()
-                        .showHighLine()
-                        .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
-                        .setBgGraphBuilder(bgGraphBuilder)
-                        .setBackgroundColor(getCol(X.color_notification_chart_background))
-                        .build();
+                    iconBitmap = numberIcon != null ? numberIcon : new BgSparklineBuilder(mContext)
+                            .setHeight(64)
+                            .showLowLine()
+                            .showHighLine()
+                            .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
+                            .setBgGraphBuilder(bgGraphBuilder)
+                            .setBackgroundColor(getCol(X.color_notification_chart_background))
+                            .build();
 
-                RemoteViews collapsedViews = new RemoteViews(context.getPackageName(), R.layout.notification_bg_collapsed);
-                collapsedViews.setImageViewBitmap(R.id.notification_image, iconBitmap);
-                collapsedViews.setTextViewText(R.id.notification_title, titleString);
-                collapsedViews.setTextViewText(R.id.notification_summary, deltaString);
+                    RemoteViews collapsedViews = new RemoteViews(context.getPackageName(), R.layout.notification_bg_collapsed);
+                    collapsedViews.setImageViewBitmap(R.id.notification_image, iconBitmap);
+                    collapsedViews.setTextViewText(R.id.notification_title, titleString);
+                    collapsedViews.setTextViewText(R.id.notification_summary, deltaString);
 
-                RemoteViews expandedViews = new RemoteViews(context.getPackageName(), R.layout.notification_bg_expanded);
-                expandedViews.setImageViewBitmap(R.id.notification_image, notifiationBitmap);
-                expandedViews.setTextViewText(R.id.notification_title, titleString);
-                expandedViews.setTextViewText(R.id.notification_summary, deltaString);
+                    RemoteViews expandedViews = new RemoteViews(context.getPackageName(), R.layout.notification_bg_expanded);
+                    expandedViews.setImageViewBitmap(R.id.notification_image, notifiationBitmap);
+                    expandedViews.setTextViewText(R.id.notification_title, titleString);
+                    expandedViews.setTextViewText(R.id.notification_summary, deltaString);
 
-                b.setStyle(customViewStyle)
-                        .setCustomContentView(collapsedViews)
-                        .setCustomBigContentView(expandedViews);
+                    b.setStyle(customViewStyle)
+                            .setCustomContentView(collapsedViews)
+                            .setCustomBigContentView(expandedViews);
+                }
             }
         }
 

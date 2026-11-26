@@ -1542,6 +1542,11 @@
                         android:key="compact_persistent_notification"
                         android:summary="@string/summary_compact_ongoing_notification"
                         android:title="@string/title_compact_ongoing_notification" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="ongoing_notification_standard_style"
+                        android:summary="@string/summary_standard_style_ongoing_notification"
+                        android:title="@string/title_standard_style_ongoing_notification" />
                 </PreferenceScreen>
                 <CheckBoxPreference
                     android:defaultValue="false"
