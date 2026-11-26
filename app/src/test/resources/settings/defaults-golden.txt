@@ -325,6 +325,7 @@ ob1_minimize_scanning=Boolean:false
 ob1_special_pairing_workaround=Boolean:false
 old_school_calibration_mode=Boolean:false
 ongoing_notification_aodchipstyle=Boolean:false
+ongoing_notification_standard_style=Boolean:false
 only_ever_use_wear_collector=Boolean:false
 opennov_debug=Boolean:false
 opennov_enabled=Boolean:false
