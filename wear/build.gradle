@@ -67,12 +67,28 @@ android {
         enabled = true
     }
 
+    // Same release signing as the phone app (see app/build.gradle); the wear app must be
+    // signed with the same key to talk to the phone app.
+    signingConfigs {
+        release {
+            if (System.getenv("XDRIP_KEYSTORE_FILE")) {
+                storeFile file(System.getenv("XDRIP_KEYSTORE_FILE"))
+                storePassword System.getenv("XDRIP_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("XDRIP_KEY_ALIAS")
+                keyPassword System.getenv("XDRIP_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
+            if (System.getenv("XDRIP_KEYSTORE_FILE")) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 

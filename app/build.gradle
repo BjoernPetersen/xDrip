@@ -153,12 +153,28 @@ android {
         enabled = true
     }
 
+    // Release signing is configured via environment variables (set by the release workflow or
+    // locally). Without XDRIP_KEYSTORE_FILE, release builds stay unsigned as before.
+    signingConfigs {
+        release {
+            if (System.getenv("XDRIP_KEYSTORE_FILE")) {
+                storeFile file(System.getenv("XDRIP_KEYSTORE_FILE"))
+                storePassword System.getenv("XDRIP_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("XDRIP_KEY_ALIAS")
+                keyPassword System.getenv("XDRIP_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
+            if (System.getenv("XDRIP_KEYSTORE_FILE")) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             minifyEnabled true
